@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Smart Applications • Termos de Serviço Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--primary:#5865F2;--secondary:#8B5CF6;--bg:#050816;--surface:#0f172a;
+--card:rgba(255,255,255,.05);--border:rgba(255,255,255,.08);
+--text:#fff;--muted:#9ca3af;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Inter,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+.aurora{position:fixed;inset:0;z-index:-2;filter:blur(120px);
+background:
+radial-gradient(circle at 20% 20%,rgba(88,101,242,.4),transparent 35%),
+radial-gradient(circle at 80% 20%,rgba(139,92,246,.3),transparent 35%),
+radial-gradient(circle at 50% 90%,rgba(59,130,246,.25),transparent 35%);
+animation:float 16s infinite alternate ease-in-out}
+@keyframes float{from{transform:translate(-40px,-20px)}to{transform:translate(40px,20px)}}
+#progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:9999;background:linear-gradient(90deg,var(--primary),var(--secondary))}
+.hero{min-height:80vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px}
+.hero h1{font-size:clamp(3rem,8vw,6rem);margin:15px 0}
+.badge{display:inline-block;padding:10px 18px;border-radius:999px;background:rgba(88,101,242,.15);border:1px solid rgba(88,101,242,.4)}
+.hero p{max-width:800px;color:var(--muted);font-size:1.1rem}
+.stats{display:flex;gap:20px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+.stat{background:var(--card);padding:15px 25px;border-radius:18px;border:1px solid var(--border);backdrop-filter:blur(20px)}
+.layout{max-width:1500px;margin:auto;display:grid;grid-template-columns:300px 1fr;gap:30px;padding:20px}
+.sidebar,.card{background:var(--card);backdrop-filter:blur(20px);border:1px solid var(--border)}
+.sidebar{position:sticky;top:20px;padding:20px;border-radius:24px;height:max-content}
+.sidebar a{display:block;color:#fff;text-decoration:none;padding:12px;border-radius:12px}
+.sidebar a:hover{background:rgba(255,255,255,.05)}
+.search{max-width:1200px;margin:auto;padding:0 20px 25px}
+.search input{width:100%;padding:18px;border-radius:16px;background:var(--surface);border:1px solid var(--border);color:#fff}
+.card{padding:30px;border-radius:24px;margin-bottom:25px;transition:.3s}
+.card:hover{transform:translateY(-6px)}
+.card h2{margin-bottom:15px}
+.card ul{padding-left:20px;line-height:1.9}
+.timeline{display:grid;gap:15px}
+.timeline div{padding:15px;background:rgba(255,255,255,.03);border-radius:12px}
+footer{text-align:center;padding:60px;color:var(--muted)}
+.reveal{opacity:0;transform:translateY(30px);transition:.6s}
+.reveal.show{opacity:1;transform:none}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.sidebar{position:relative}}
+</style>
+</head>
+<body>
+<div class="aurora"></div>
+<div id="progress"></div>
+
+<section class="hero">
+<div>
+<div class="badge">SMART APPLICATIONS • TERMOS OFICIAIS</div>
+<h1>Termos de Serviço</h1>
+<p>Documento oficial contendo condições de compra, uso, suporte, propriedade intelectual, garantias, reembolsos e responsabilidades relacionadas aos produtos e serviços digitais da Smart Applications.</p>
+<div class="stats">
+</div>
+</div>
+</section>
+
+<div class="search"><input id="search" placeholder="Pesquisar cláusulas, suporte, PIX, garantia, reembolso..."></div>
+
+<div class="layout">
+<aside class="sidebar">
+<a href="#s1">Termos Gerais</a>
+<a href="#s2">Pagamentos</a>
+<a href="#s3">Garantia</a>
+<a href="#s4">Suporte</a>
+<a href="#s5">Propriedade</a>
+<a href="#s6">Segurança</a>
+<a href="#s7">Limitações</a>
+<a href="#s8">Atualizações</a>
+<a href="#s9">Disputas</a>
+<a href="#s10">Contato</a>
+</aside>
+
+<main>
+<section class="card reveal term" id="s1"><h2>1. Termos Gerais</h2><ul>
+<li>A compra implica aceitação integral dos termos.</li>
+<li>A Smart Applications atua como desenvolvedora de soluções digitais.</li>
+<li>O usuário é responsável pela utilização dos produtos adquiridos.</li>
+<li>Fraudes, manipulações e tentativas de enganar a equipe resultarão em bloqueio permanente.</li>
+<li>Os termos podem ser alterados sem aviso prévio.</li></ul></section>
+
+<section class="card reveal term" id="s2"><h2>2. Pagamentos e Aprovação</h2><ul>
+<li>Pagamento exclusivamente via PIX.</li>
+<li>Pedidos são liberados somente após validação manual.</li>
+<li>Comprovantes falsos geram banimento imediato.</li>
+<li>O prazo médio de análise é de até 24 horas úteis.</li>
+<li>Pagamentos enviados para chaves incorretas são responsabilidade do comprador.</li></ul></section>
+
+<section class="card reveal term" id="s3"><h2>3. Garantia e Reembolso</h2><ul>
+<li>Produtos digitais possuem natureza própria e são entregues eletronicamente.</li>
+<li>Após a entrega do produto ou setup, a venda é considerada concluída.</li>
+<li>Falhas causadas por modificações externas não são cobertas.</li>
+<li>Atualizações futuras podem ser cobradas separadamente.</li></ul></section>
+
+<section class="card reveal term" id="s4"><h2>4. Suporte e Manutenção</h2><ul>
+<li>Suporte somente pelos canais oficiais.</li>
+<li>Atendimento sujeito à fila de solicitações.</li>
+<li>Problemas causados por configuração incorreta do cliente não estão incluídos.</li>
+<li>Abuso verbal pode resultar no encerramento do atendimento.</li></ul></section>
+
+<section class="card reveal term" id="s5"><h2>5. Propriedade Intelectual</h2><ul>
+<li>Revenda, redistribuição ou compartilhamento não autorizado são proibidos.</li>
+<li>Créditos de desenvolvimento não podem ser removidos.</li>
+<li>Algoritmos e estruturas internas permanecem propriedade da Smart Applications.</li>
+<li>Engenharia reversa é proibida.</li></ul></section>
+
+<section class="card reveal term" id="s6"><h2>6. Conduta e Segurança</h2><ul>
+<li>O cliente é responsável pela proteção dos arquivos .env.</li>
+<li>Links e arquivos recebidos não devem ser compartilhados.</li>
+<li>Uso para atividades ilícitas encerra a relação comercial.</li>
+<li>Senhas fracas e falhas de segurança locais são responsabilidade do usuário.</li></ul></section>
+
+<section class="card reveal term" id="s7"><h2>7. Limitações de Responsabilidade</h2><ul>
+<li>Não há garantia de disponibilidade contínua de serviços de terceiros.</li>
+<li>Mudanças na API do Discord podem afetar funcionalidades.</li>
+<li>A empresa não responde por perdas indiretas decorrentes de plataformas externas.</li></ul></section>
+
+<section class="card reveal term" id="s8"><h2>8. Atualizações dos Termos</h2><ul>
+<li>Os termos podem ser revisados periodicamente.</li>
+<li>Versões atualizadas substituem versões anteriores.</li></ul></section>
+
+<section class="card reveal term" id="s9"><h2>9. Disputas e Chargebacks</h2><ul>
+<li>Tentativas de chargeback podem resultar em revogação de acesso aos serviços.</li>
+<li>A equipe poderá registrar evidências de entrega e comunicação.</li></ul></section>
+
+<section class="card reveal term" id="s10"><h2>10. Contato Oficial</h2>
+<div class="timeline">
+<div>Suporte oficial pelos canais divulgados pela Smart Applications.</div>
+<div>Solicitações devem conter informações claras para agilizar o atendimento.</div>
+<div>O tempo de resposta varia conforme a demanda.</div>
+</div>
+</section>
+</main>
+</div>
+
+<footer>© 2026 Smart Applications • Termos de Serviço Premium</footer>
+
+<script>
+window.addEventListener('scroll',()=>{
+const h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+document.getElementById('progress').style.width=((scrollY/h)*100)+'%';
+});
+document.getElementById('search').addEventListener('input',e=>{
+const v=e.target.value.toLowerCase();
+document.querySelectorAll('.term').forEach(t=>{
+t.style.display=t.innerText.toLowerCase().includes(v)?'block':'none';
+});
+});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')}));
+document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
+</script>
+</body>
+</html>
