@@ -1,0 +1,1 @@
+# smart.applications.termos
