@@ -1,37 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <link id="favicon" rel="icon" type="image/jpeg" href="https://media-gru1-1.cdn.whatsapp.net/v/t61.24694-24/489405406_650586094569182_6793834854762065392_n.jpg?ccb=11-4&oh=01_Q5Aa4wGY7p0SayjbDIPzs9zg4cRQqjwpuZWHtXDXiacRVfJnLw&oe=6A35BF57&_nc_sid=5e03e0&_nc_cat=102">
-  
-  <title>PDV Profissional</title>
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-    }
-  </script>
-
-  <!-- HTML2PDF para baixar relatórios -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <!-- Babel -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <!-- React e Lucide Icons -->
-  <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.2.0",
-        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "lucide-react": "https://esm.sh/lucide-react@0.330.0?deps=react@18.2.0"
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PDV Grêmio">
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <link rel="icon" type="image/png" href="https://i.ibb.co/pjgs4cZW/Design-sem-nome-2.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/pjgs4cZW/Design-sem-nome-2.png">
+    
+    <title>Financeiro Grêmio</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: { colors: { brand: 'var(--brand-color)', 'brand-hover': 'var(--brand-hover)' } } }
       }
-    }
-  </script>
+    </script>
+
+    <style>
+      :root { --brand-color: #2563eb; --brand-hover: #1d4ed8; }
+      .theme-emerald { --brand-color: #059669; --brand-hover: #047857; }
+      .theme-violet { --brand-color: #7c3aed; --brand-hover: #6d28d9; }
+      .theme-rose { --brand-color: #e11d48; --brand-hover: #be123c; }
+      .theme-amber { --brand-color: #d97706; --brand-hover: #b45309; }
+      .theme-cyan { --brand-color: #0891b2; --brand-hover: #0e7490; }
+      .theme-pink { --brand-color: #db2777; --brand-hover: #be185d; }
+      .theme-slate { --brand-color: #475569; --brand-hover: #334155; }
+
+      /* Animação do Countdown das notificações */
+      @keyframes countdown {
+        from { width: 100%; }
+        to { width: 0%; }
+      }
+      .toast-progress {
+        animation: countdown 3s linear forwards;
+      }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.2.0",
+          "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+          "lucide-react": "https://esm.sh/lucide-react@0.330.0?deps=react@18.2.0"
+        }
+      }
+    </script>
 </head>
+
 <body class="transition-colors duration-300 bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-gray-100">
   <div id="root"></div>
 
@@ -41,8 +66,8 @@
     import { 
       ShoppingCart, Settings, Tag, PlusCircle, MinusCircle, CheckCircle, 
       CreditCard, Banknote, X, Edit2, Trash2, RotateCcw, LayoutDashboard, 
-      History, Printer, Download, Calculator, Lock, Sun, Moon, AlertTriangle, 
-      Info, Image, FileArchive, Flag, GripHorizontal
+      History, Printer, Download, Calculator, Lock, Sun, Moon, AlertTriangle, Info,
+      GripHorizontal, Archive, Image as ImageIcon, Save, Upload, Palette, FileSpreadsheet, Bell, BellOff, Eye, Search
     } from 'lucide-react';
 
     function App() {
@@ -52,90 +77,338 @@
         return saved ? JSON.parse(saved) : defaultValue;
       };
 
-      const defaultSettings = { 
-        gremioName: 'Grêmio Estudantil', 
-        eventName: 'Festa Junina',
-        logoUrl: 'https://media-gru1-1.cdn.whatsapp.net/v/t61.24694-24/489405406_650586094569182_6793834854762065392_n.jpg?ccb=11-4&oh=01_Q5Aa4wGY7p0SayjbDIPzs9zg4cRQqjwpuZWHtXDXiacRVfJnLw&oe=6A35BF57&_nc_sid=5e03e0&_nc_cat=102'
-      };
-
       const [theme, setTheme] = useState(() => loadData('pdv_theme', 'light'));
-      const [settings, setSettings] = useState(() => loadData('pdv_settings', defaultSettings));
+      
+      const defaultSettings = { 
+        eventName: 'Evento Atual', 
+        gremioName: 'Grêmio Estudantil',
+        logoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1jvlQ6U_vRu2P3HDiuX9V11-93jeq1u78JI4yT7w6tdOClxB2N-bglMI&s=10',
+        accentColor: 'blue',
+        eventOpen: false
+      };
+      
+      const [settings, setSettings] = useState(() => {
+        const loaded = loadData('pdv_settings', defaultSettings);
+        const merged = { ...defaultSettings, ...loaded };
+        if (typeof loaded.eventOpen !== 'boolean') merged.eventOpen = loadData('pdv_sales', []).length > 0;
+        return merged;
+      });
+      
+      const [eventLogs, setEventLogs] = useState(() => loadData('pdv_event_logs', []));
       const [products, setProducts] = useState(() => loadData('pdv_products', []));
       const [sales, setSales] = useState(() => loadData('pdv_sales', []));
-      const [eventLogs, setEventLogs] = useState(() => loadData('pdv_event_logs', []));
       
       const [activeTab, setActiveTab] = useState('pos'); 
       const [cart, setCart] = useState([]);
       const [cartDiscount, setCartDiscount] = useState(0);
 
-      const [cashDrawer, setCashDrawer] = useState(() => loadData('pdv_cash_drawer', {
+      const defaultDrawer = {
         200: 0, 100: 0, 50: 0, 20: 0, 10: 0, 5: 0, 2: 0, 1: 0, 0.5: 0, 0.25: 0, 0.1: 0, 0.05: 0
-      }));
+      };
+      const [cashDrawer, setCashDrawer] = useState(() => loadData('pdv_cash_drawer', defaultDrawer));
 
-      // Modais Customizados
+      const [isCalcOpen, setIsCalcOpen] = useState(false);
+      const [calcInput, setCalcInput] = useState('');
       const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', text: '', action: null, isDanger: false });
       const [alertDialog, setAlertDialog] = useState({ isOpen: false, title: '', text: '' });
+      
       const [isPixModalOpen, setIsPixModalOpen] = useState(false);
-
+      const [isCashModalOpen, setIsCashModalOpen] = useState(false);
+      const [amountReceived, setAmountReceived] = useState('');
+      
+      // Estados para produtos
       const [editingProduct, setEditingProduct] = useState(null);
       const [prodName, setProdName] = useState('');
       const [prodPrice, setProdPrice] = useState('');
-      const [checkoutMsg, setCheckoutMsg] = useState('');
+      const [prodStockType, setProdStockType] = useState('infinite'); // 'infinite' ou 'finite'
+      const [prodStockQty, setProdStockQty] = useState('');
+      
       const [pixStudentName, setPixStudentName] = useState('');
       const [pixStudentClass, setPixStudentClass] = useState('');
+      
+      const [viewingEvent, setViewingEvent] = useState(null);
+      const [toasts, setToasts] = useState([]);
+      const [isMuted, setIsMuted] = useState(false);
+      const [posSearch, setPosSearch] = useState('');
+      const [newEventName, setNewEventName] = useState('');
 
-      // --- ESTADOS DA CALCULADORA MÓVEL ---
-      const [isCalcOpen, setIsCalcOpen] = useState(false);
-      const [calcInput, setCalcInput] = useState('');
-      const [calcPos, setCalcPos] = useState({ x: window.innerWidth - 300, y: 80 });
-      const [isDragging, setIsDragging] = useState(false);
-      const dragRef = useRef({ x: 0, y: 0 });
+      const playBeep = () => {
+        if (isMuted) return;
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
+          gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+          oscillator.start();
+          gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+          oscillator.stop(audioCtx.currentTime + 0.1);
+        } catch (e) {}
+      };
 
-      // Persistência
+      const showToast = (message, type = 'success') => {
+        if (isMuted) return; 
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
+        playBeep();
+        
+        setTimeout(() => {
+          setToasts(prev => prev.filter(t => t.id !== id));
+        }, 3000);
+      };
+
+      const removeToast = (id) => {
+        setToasts(prev => prev.filter(t => t.id !== id));
+      };
+
       useEffect(() => { localStorage.setItem('pdv_theme', JSON.stringify(theme)); }, [theme]);
-      useEffect(() => { 
-        localStorage.setItem('pdv_settings', JSON.stringify(settings)); 
-        document.getElementById('favicon').href = settings.logoUrl;
-      }, [settings]);
+      useEffect(() => { localStorage.setItem('pdv_settings', JSON.stringify(settings)); }, [settings]);
+      useEffect(() => { localStorage.setItem('pdv_event_logs', JSON.stringify(eventLogs)); }, [eventLogs]);
       useEffect(() => { localStorage.setItem('pdv_products', JSON.stringify(products)); }, [products]);
       useEffect(() => { localStorage.setItem('pdv_sales', JSON.stringify(sales)); }, [sales]);
-      useEffect(() => { localStorage.setItem('pdv_event_logs', JSON.stringify(eventLogs)); }, [eventLogs]);
       useEffect(() => { localStorage.setItem('pdv_cash_drawer', JSON.stringify(cashDrawer)); }, [cashDrawer]);
+      useEffect(() => {
+        const onKey = (e) => {
+          if (e.key === 'Escape') {
+            setIsPixModalOpen(false); setIsCashModalOpen(false); setViewingEvent(null);
+            setAlertDialog(d => ({ ...d, isOpen: false })); setConfirmDialog(d => ({ ...d, isOpen: false }));
+          }
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+      }, []);
 
-      // Aplicação do Tema Dark/Light
       useEffect(() => {
         if (theme === 'dark') document.documentElement.classList.add('dark');
         else document.documentElement.classList.remove('dark');
-      }, [theme]);
 
-      // Eventos globais para arrastar a calculadora
-      useEffect(() => {
-        const handleMouseMove = (e) => {
-          if (!isDragging) return;
-          setCalcPos({
-            x: e.clientX - dragRef.current.x,
-            y: e.clientY - dragRef.current.y
-          });
-        };
-        const handleMouseUp = () => setIsDragging(false);
-
-        if (isDragging) {
-          window.addEventListener('mousemove', handleMouseMove);
-          window.addEventListener('mouseup', handleMouseUp);
+        document.documentElement.className = document.documentElement.className.replace(/theme-\w+/g, '');
+        if(settings.accentColor !== 'blue') {
+          document.documentElement.classList.add(`theme-${settings.accentColor}`);
         }
-        return () => {
-          window.removeEventListener('mousemove', handleMouseMove);
-          window.removeEventListener('mouseup', handleMouseUp);
-        };
-      }, [isDragging]);
+      }, [theme, settings.accentColor]);
 
-      // Utilitários
       const formatCurrency = (val) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       const formatDate = (isoString) => new Date(isoString).toLocaleString('pt-BR');
 
-      // --- EXPORTAÇÃO E CÁLCULOS GERAIS ---
-      const getReport = () => {
-        return sales.reduce((acc, sale) => {
+      // --- CAIXA E VENDAS ---
+      const addToCart = (product) => {
+        if (product.stockType === 'finite' && product.stockQuantity <= 0) {
+          showToast('Produto esgotado!', 'error');
+          return;
+        }
+
+        setCart(prev => {
+          const exists = prev.find(i => i.product.id === product.id);
+          const currentQty = exists ? exists.quantity : 0;
+          
+          if (product.stockType === 'finite' && currentQty >= product.stockQuantity) {
+            showToast('Quantidade máxima em estoque atingida!', 'error');
+            return prev;
+          }
+
+          if (exists) return prev.map(i => i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
+          return [...prev, { product, quantity: 1 }];
+        });
+      };
+
+      const removeFromCart = (productId) => {
+        setCart(prev => {
+          const exists = prev.find(i => i.product.id === productId);
+          if (exists.quantity === 1) return prev.filter(i => i.product.id !== productId);
+          return prev.map(i => i.product.id === productId ? { ...i, quantity: i.quantity - 1 } : i);
+        });
+      };
+
+      const clearCart = () => {
+        setCart([]);
+        setCartDiscount(0);
+      };
+
+      const cartSubtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+      const cartTotal = Math.max(0, cartSubtotal - cartDiscount);
+
+      const openEvent = () => {
+        const name = newEventName.trim() || settings.eventName || 'Evento Atual';
+        setSettings({ ...settings, eventName: name, eventOpen: true });
+        setNewEventName('');
+        showToast('Caixa aberto: ' + name);
+      };
+
+      const handlePixClick = () => {
+        if (cart.length === 0) return;
+        setIsPixModalOpen(true);
+      };
+
+      const handleCashClick = () => {
+        if (cart.length === 0) return;
+        setAmountReceived('');
+        setIsCashModalOpen(true);
+      };
+
+      const processCheckout = (paymentMethod) => {
+        if (!settings.eventOpen) return;
+        if (cart.length === 0) return;
+        
+        if (paymentMethod === 'PIX' && (!pixStudentName.trim() || !pixStudentClass.trim())) {
+          setAlertDialog({ isOpen: true, title: 'Atenção', text: 'Por favor, preencha o Nome e a Série do aluno.'});
+          return;
+        }
+
+        // Subtrai do estoque físico (se for finito)
+        setProducts(prevProducts => {
+          return prevProducts.map(p => {
+            if (p.stockType === 'finite') {
+              const inCart = cart.find(c => c.product.id === p.id);
+              if (inCart) {
+                return { ...p, stockQuantity: Math.max(0, p.stockQuantity - inCart.quantity) };
+              }
+            }
+            return p;
+          });
+        });
+
+        const newSale = {
+          id: Date.now().toString(),
+          items: [...cart], subtotal: cartSubtotal, discount: cartDiscount, total: cartTotal,
+          paymentMethod, timestamp: new Date().toISOString(),
+          studentInfo: paymentMethod === 'PIX' ? { name: pixStudentName, schoolClass: pixStudentClass } : null
+        };
+
+        setSales([newSale, ...sales]); 
+        clearCart();
+        setPixStudentName(''); setPixStudentClass(''); 
+        setIsPixModalOpen(false);
+        setIsCashModalOpen(false); 
+        setAmountReceived('');
+
+        showToast(`Venda concluída: ${formatCurrency(cartTotal)} via ${paymentMethod}`);
+      };
+
+      const cancelSale = (saleId) => {
+        const saleToCancel = sales.find(s => s.id === saleId);
+        if (!saleToCancel) return;
+
+        setConfirmDialog({
+          isOpen: true, title: 'Estornar Venda', text: 'Tem certeza que deseja estornar (cancelar) esta venda? Ela será removida do histórico atual e os itens voltarão ao estoque.', isDanger: true,
+          action: () => {
+            // Devolve itens para o estoque
+            setProducts(prevProducts => {
+              let updatedProducts = [...prevProducts];
+              saleToCancel.items.forEach(item => {
+                 const pIndex = updatedProducts.findIndex(p => p.id === item.product.id);
+                 if(pIndex !== -1 && updatedProducts[pIndex].stockType === 'finite') {
+                    updatedProducts[pIndex] = { ...updatedProducts[pIndex], stockQuantity: updatedProducts[pIndex].stockQuantity + item.quantity };
+                 }
+              });
+              return updatedProducts;
+            });
+
+            setSales(sales.filter(s => s.id !== saleId));
+            showToast('Venda estornada com sucesso!', 'info');
+          }
+        });
+      };
+
+      // --- PRODUTOS ---
+      const saveProduct = (e) => {
+        e.preventDefault();
+        if (!prodName || !prodPrice) return;
+        if (prodStockType === 'finite' && (prodStockQty === '' || parseInt(prodStockQty) < 0)) {
+          showToast('Informe uma quantidade válida para o estoque.', 'error');
+          return;
+        }
+
+        const priceNum = parseFloat(prodPrice.toString().replace(',', '.'));
+        const stockNum = prodStockType === 'finite' ? parseInt(prodStockQty) : null;
+
+        if (editingProduct) {
+          setProducts(products.map(p => p.id === editingProduct.id ? { ...p, name: prodName, price: priceNum, stockType: prodStockType, stockQuantity: stockNum } : p));
+          setEditingProduct(null);
+          showToast('Produto atualizado com sucesso!');
+        } else {
+          setProducts([...products, { id: Date.now().toString(), name: prodName, price: priceNum, stockType: prodStockType, stockQuantity: stockNum }]);
+          showToast('Produto adicionado ao cardápio!');
+        }
+        
+        setProdName(''); setProdPrice(''); setProdStockType('infinite'); setProdStockQty('');
+      };
+
+      const deleteProduct = (id) => {
+        setConfirmDialog({
+          isOpen: true, title: 'Excluir Produto', text: 'Deseja excluir este produto definitivamente do cardápio?', isDanger: true,
+          action: () => {
+            setProducts(products.filter(p => p.id !== id));
+            setCart(cart.filter(item => item.product.id !== id));
+            showToast('Produto removido!', 'info');
+          }
+        });
+      };
+
+      // --- EXPORTAÇÃO E BACKUP ---
+      const exportCSV = () => {
+        let csvContent = "Data,Hora,Metodo,Estudante,Turma,Itens,Desconto,Total\n";
+        sales.forEach(sale => {
+          const date = new Date(sale.timestamp);
+          const student = sale.studentInfo ? sale.studentInfo.name : 'N/A';
+          const tClass = sale.studentInfo ? sale.studentInfo.schoolClass : 'N/A';
+          const items = sale.items.map(i => `${i.quantity}x ${i.product.name}`).join(';');
+          csvContent += `${date.toLocaleDateString('pt-BR')},${date.toLocaleTimeString('pt-BR')},${sale.paymentMethod},${student},${tClass},"${items}",${sale.discount || 0},${sale.total}\n`;
+        });
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Vendas_${settings.eventName.replace(/\s+/g, '_')}.csv`;
+        link.click();
+        showToast('Planilha CSV exportada!');
+      };
+
+      const handleExportBackup = () => {
+        const backupData = {
+          theme, settings, eventLogs, products, sales, cashDrawer, exportDate: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(backupData)], { type: 'application/json' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Backup_Gremio_${new Date().getTime()}.json`;
+        link.click();
+        showToast('Backup baixado com sucesso!');
+      };
+
+      const handleImportBackup = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            if(data.settings && data.products) {
+              localStorage.setItem('pdv_theme', JSON.stringify(data.theme || 'light'));
+              localStorage.setItem('pdv_settings', JSON.stringify(data.settings));
+              localStorage.setItem('pdv_event_logs', JSON.stringify(data.eventLogs || []));
+              localStorage.setItem('pdv_products', JSON.stringify(data.products));
+              localStorage.setItem('pdv_sales', JSON.stringify(data.sales || []));
+              localStorage.setItem('pdv_cash_drawer', JSON.stringify(data.cashDrawer || defaultDrawer));
+              
+              setAlertDialog({ isOpen: true, title: 'Sucesso', text: 'Backup restaurado! A página será recarregada.'});
+              setTimeout(() => window.location.reload(), 2000);
+            } else {
+              throw new Error("Arquivo inválido");
+            }
+          } catch (err) {
+            setAlertDialog({ isOpen: true, title: 'Erro', text: 'O arquivo selecionado não é um backup válido do sistema.'});
+          }
+        };
+        reader.readAsText(file);
+      };
+
+      const getReport = (salesData = sales) => {
+        return salesData.reduce((acc, sale) => {
           acc.total += sale.total;
           acc.discounts += sale.discount || 0;
           if (sale.paymentMethod === 'PIX') acc.pix += sale.total;
@@ -150,212 +423,158 @@
         }, { total: 0, pix: 0, dinheiro: 0, discounts: 0, items: {} });
       };
 
+      const executeWithLightMode = (callback) => {
+        const wasDark = document.documentElement.classList.contains('dark');
+        if (wasDark) document.documentElement.classList.remove('dark');
+        setTimeout(() => {
+          callback(() => {
+            if (wasDark) document.documentElement.classList.add('dark');
+          });
+        }, 150);
+      };
+
+      const requestPrint = () => {
+        executeWithLightMode((restoreTheme) => {
+          window.print();
+          setTimeout(restoreTheme, 1000); 
+        });
+      };
+
+      const downloadPDF = (elementId, filenamePrefix) => {
+        const element = document.getElementById(elementId);
+        executeWithLightMode((restoreTheme) => {
+          const opt = {
+            margin: 10,
+            filename: `${filenamePrefix}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+          html2pdf().set(opt).from(element).save().then(() => {
+            restoreTheme();
+            showToast('PDF baixado com sucesso!');
+          });
+        });
+      };
+
       const calculateDrawerTotal = () => {
         return Object.entries(cashDrawer).reduce((total, [value, qty]) => total + (Number(value) * Number(qty || 0)), 0);
       };
 
-      const reportData = getReport();
-      const drawerTotal = calculateDrawerTotal();
-      const drawerDiff = drawerTotal - reportData.dinheiro;
+      // --- CALCULADORA ---
+      const calcPos = useRef({ x: window.innerWidth > 768 ? window.innerWidth - 300 : 20, y: 20 });
+      const calcRef = useRef(null);
 
-      // --- CAIXA E VENDAS ---
-      const addToCart = (product) => {
-        setCart(prev => {
-          const exists = prev.find(i => i.product.id === product.id);
-          if (exists) return prev.map(i => i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
-          return [...prev, { product, quantity: 1 }];
-        });
-      };
+      const handleCalcDragStart = (e) => {
+        const startX = e.clientX || e.touches[0].clientX;
+        const startY = e.clientY || e.touches[0].clientY;
+        const startPosX = calcPos.current.x;
+        const startPosY = calcPos.current.y;
 
-      const removeFromCart = (productId) => {
-        setCart(prev => {
-          const exists = prev.find(i => i.product.id === productId);
-          if (exists.quantity === 1) return prev.filter(i => i.product.id !== productId);
-          return prev.map(i => i.product.id === productId ? { ...i, quantity: i.quantity - 1 } : i);
-        });
-      };
-
-      const cartSubtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-      const cartTotal = Math.max(0, cartSubtotal - cartDiscount);
-
-      const processCheckout = (paymentMethod) => {
-        if (cart.length === 0) return;
-        if (paymentMethod === 'PIX' && (!pixStudentName.trim() || !pixStudentClass.trim())) {
-          setAlertDialog({ isOpen: true, title: 'Atenção', text: 'Por favor, preencha o Nome e a Série do aluno.'});
-          return;
-        }
-
-        const newSale = {
-          id: Date.now().toString(),
-          items: [...cart], subtotal: cartSubtotal, discount: cartDiscount, total: cartTotal,
-          paymentMethod, timestamp: new Date().toISOString(),
-          studentInfo: paymentMethod === 'PIX' ? { name: pixStudentName, schoolClass: pixStudentClass } : null
+        const onMove = (moveEvent) => {
+          const currentX = moveEvent.clientX || (moveEvent.touches && moveEvent.touches[0].clientX);
+          const currentY = moveEvent.clientY || (moveEvent.touches && moveEvent.touches[0].clientY);
+          calcPos.current = {
+            x: startPosX + (currentX - startX),
+            y: startPosY + (currentY - startY)
+          };
+          if(calcRef.current) {
+            calcRef.current.style.transform = `translate(${calcPos.current.x}px, ${calcPos.current.y}px)`;
+          }
         };
 
-        setSales([newSale, ...sales]); setCart([]); setCartDiscount(0);
-        setPixStudentName(''); setPixStudentClass(''); setIsPixModalOpen(false);
-
-        setCheckoutMsg(`Sucesso! ${formatCurrency(cartTotal)} via ${paymentMethod}`);
-        setTimeout(() => setCheckoutMsg(''), 3000);
-      };
-
-      const cancelSale = (saleId) => {
-        setConfirmDialog({
-          isOpen: true, title: 'Estornar Venda', text: 'Tem certeza que deseja estornar (cancelar) esta venda? Ela será removida do histórico.', isDanger: true,
-          action: () => setSales(sales.filter(s => s.id !== saleId))
-        });
-      };
-
-      // --- PRODUTOS ---
-      const saveProduct = (e) => {
-        e.preventDefault();
-        if (!prodName || !prodPrice) return;
-        const priceNum = parseFloat(prodPrice.toString().replace(',', '.'));
-        if (editingProduct) {
-          setProducts(products.map(p => p.id === editingProduct.id ? { ...p, name: prodName, price: priceNum } : p));
-          setEditingProduct(null);
-        } else {
-          setProducts([...products, { id: Date.now().toString(), name: prodName, price: priceNum }]);
-        }
-        setProdName(''); setProdPrice('');
-      };
-
-      // --- EXPORTAÇÃO PDF & IMPRESSÃO (FORÇANDO MODO CLARO) ---
-      const requestPrint = () => {
-        const wasDark = document.documentElement.classList.contains('dark');
-        if (wasDark) document.documentElement.classList.remove('dark');
-        
-        setTimeout(() => {
-          window.print();
-          if (wasDark) document.documentElement.classList.add('dark');
-        }, 100);
-      };
-
-      const downloadPDF = async (elementId, filenamePrefix) => {
-        const element = document.getElementById(elementId);
-        const wasDark = document.documentElement.classList.contains('dark');
-        
-        // Força modo claro temporariamente para o PDF
-        if (wasDark) document.documentElement.classList.remove('dark');
-        
-        await new Promise(resolve => setTimeout(resolve, 100)); // Espera o CSS aplicar
-
-        const opt = {
-          margin: 10,
-          filename: `${filenamePrefix}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        const onEnd = () => {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onEnd);
+          document.removeEventListener('touchmove', onMove);
+          document.removeEventListener('touchend', onEnd);
         };
 
-        html2pdf().set(opt).from(element).save().then(() => {
-          // Restaura o modo escuro
-          if (wasDark) document.documentElement.classList.add('dark');
-        });
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onEnd);
       };
 
-      // --- LÓGICA DA CALCULADORA COM VÍRGULA ---
       const handleCalcBtn = (btn) => {
         if(btn === 'C') setCalcInput('');
         else if(btn === '=') { 
           try { 
-            // Substitui símbolos visuais por operadores matemáticos reais
-            let expression = calcInput.replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.');
-            let result = eval(expression);
-            // Retorna o resultado com vírgula se for decimal
-            setCalcInput(String(result).replace('.', ',')); 
-          } catch(e) { setCalcInput('Erro'); } 
+            let evalStr = calcInput.replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.');
+            if (!/^[0-9+\-*/.() ]+$/.test(evalStr)) throw new Error('inv');
+            let res = Function('"use strict"; return (' + evalStr + ')')();
+            if (!Number.isFinite(res)) throw new Error('inv');
+            res = Math.round(res * 1e10) / 1e10;
+            setCalcInput(res.toString().replace(/\./g, ',')); 
+          } catch(e) { 
+            setCalcInput('Erro'); 
+          } 
         } 
         else { 
           setCalcInput(prev => prev === 'Erro' ? btn : prev + btn); 
         }
       };
 
-      // --- LOGS E ENCERRAMENTO DE EVENTO ---
-      const finishEvent = () => {
-        if(sales.length === 0) {
-          setAlertDialog({isOpen: true, title: 'Aviso', text: 'Não há vendas registradas para encerrar um evento.'});
-          return;
-        }
-
-        setConfirmDialog({
-          isOpen: true, 
-          title: 'Encerrar e Salvar Evento', 
-          text: `Deseja encerrar o evento "${settings.eventName}"? Isso salvará o faturamento nos Logs Históricos, apagará as vendas atuais e limpará a gaveta para o próximo evento.`, 
-          isDanger: true,
-          action: () => {
-            const newLog = {
-              id: Date.now().toString(),
-              date: new Date().toISOString(),
-              eventName: settings.eventName,
-              totalGross: reportData.total,
-              totalPix: reportData.pix,
-              totalCash: reportData.dinheiro,
-              drawerPhysical: drawerTotal,
-              difference: drawerDiff
-            };
-            
-            setEventLogs([newLog, ...eventLogs]);
-            setSales([]); 
-            setCashDrawer({200:0,100:0,50:0,20:0,10:0,5:0,2:0,1:0,0.5:0,0.25:0,0.1:0,0.05:0}); 
-            setActiveTab('settings');
-            setAlertDialog({isOpen: true, title: 'Sucesso', text: 'Evento encerrado com sucesso! Verifique a aba de Configurações para ver os logs.'});
-          }
-        });
-      };
-
       const NavItem = ({ id, icon: Icon, label }) => (
-        <button onClick={() => setActiveTab(id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium ${activeTab === id ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+        <button onClick={() => setActiveTab(id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium ${activeTab === id ? 'bg-brand text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
           <Icon size={20} /> <span className="hidden md:block">{label}</span>
         </button>
       );
 
-      // Componente reutilizável de Assinaturas
-      const SignaturesSection = () => (
-        <div className="mt-24 pt-8 flex flex-col md:flex-row justify-between text-center text-sm font-semibold text-gray-800 print:text-black gap-12 print:gap-8">
-          <div className="flex-1">
-            <div className="border-t-2 border-gray-400 print:border-black mx-2 pt-2">
-              <p>Operador de Caixa</p>
-            </div>
-          </div>
-          <div className="flex-1">
-            <div className="border-t-2 border-gray-400 print:border-black mx-2 pt-2">
-              <p>Coordenador Financeiro</p>
-            </div>
-          </div>
-          <div className="flex-1">
-            <div className="border-t-2 border-gray-400 print:border-black mx-2 pt-2">
-              <p>Coordenador Geral</p>
-            </div>
-          </div>
-        </div>
-      );
+      const filteredProducts = products.filter(p => p.name.toLowerCase().includes(posSearch.trim().toLowerCase()));
+      const reportData = getReport();
+      const drawerTotal = calculateDrawerTotal();
+      const drawerDiff = drawerTotal - reportData.dinheiro;
+
+      const themeColors = {
+        blue: 'bg-blue-600', emerald: 'bg-emerald-600', violet: 'bg-violet-600', rose: 'bg-rose-600',
+        amber: 'bg-amber-600', cyan: 'bg-cyan-600', pink: 'bg-pink-600', slate: 'bg-slate-600'
+      };
 
       return (
-        <div className="min-h-screen flex w-full font-sans">
+        <div className="min-h-screen flex w-full">
           
+          {/* ================= SISTEMA DE NOTIFICAÇÕES (TOASTS) ================= */}
+          <div className="fixed bottom-6 right-6 z-[200] flex flex-col items-end gap-3 pointer-events-none">
+            <button onClick={() => setIsMuted(!isMuted)} className="p-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full shadow-lg pointer-events-auto transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 mb-2">
+              {isMuted ? <BellOff size={18} className="text-red-500" /> : <Bell size={18} />}
+            </button>
+            
+            {toasts.map(t => (
+              <div key={t.id} className={`relative overflow-hidden px-6 py-4 rounded-xl shadow-2xl flex flex-col justify-center min-w-[280px] pointer-events-auto transition-all duration-300 animate-in slide-in-from-bottom-2 fade-in ${t.type === 'error' ? 'bg-red-500' : 'bg-brand'}`}>
+                <div className="flex items-center justify-between gap-4 text-white font-bold">
+                  <div className="flex items-center gap-2">
+                    {t.type === 'error' ? <AlertTriangle size={20}/> : <CheckCircle size={20} />}
+                    <span>{t.message}</span>
+                  </div>
+                  <button onClick={() => removeToast(t.id)} className="text-white/80 hover:text-white"><X size={16} /></button>
+                </div>
+                {/* Linha de Countdown inferior */}
+                <div className="absolute bottom-0 left-0 h-1 bg-white/40 toast-progress"></div>
+              </div>
+            ))}
+          </div>
+
           {/* ================= MODAIS ESCONDIDOS ================= */}
           
-          {/* Alerta Simples */}
           {alertDialog.isOpen && (
             <div className="absolute inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm print:hidden">
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6 animate-in zoom-in-95">
-                <div className="flex items-center gap-3 mb-4 text-blue-600 dark:text-blue-400">
+                <div className="flex items-center gap-3 mb-4 text-brand">
                   <Info size={28}/> <h3 className="text-xl font-bold">{alertDialog.title}</h3>
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 mb-6">{alertDialog.text}</p>
-                <button onClick={() => setAlertDialog({isOpen: false})} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors">
+                <button onClick={() => setAlertDialog({isOpen: false})} className="w-full py-3 bg-brand hover:bg-brand-hover text-white rounded-xl font-bold transition-colors">
                   Entendi
                 </button>
               </div>
             </div>
           )}
 
-          {/* Confirmação (Sim/Não) */}
           {confirmDialog.isOpen && (
             <div className="absolute inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm print:hidden">
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6 animate-in zoom-in-95">
-                <div className={`flex items-center gap-3 mb-4 ${confirmDialog.isDanger ? 'text-red-500' : 'text-blue-600 dark:text-blue-400'}`}>
+                <div className={`flex items-center gap-3 mb-4 ${confirmDialog.isDanger ? 'text-red-500' : 'text-brand'}`}>
                   {confirmDialog.isDanger ? <AlertTriangle size={28}/> : <Info size={28}/>} 
                   <h3 className="text-xl font-bold">{confirmDialog.title}</h3>
                 </div>
@@ -364,7 +583,7 @@
                   <button onClick={() => setConfirmDialog({...confirmDialog, isOpen: false})} className="flex-1 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                     Cancelar
                   </button>
-                  <button onClick={() => { confirmDialog.action(); setConfirmDialog({...confirmDialog, isOpen: false}); }} className={`flex-1 py-3 text-white rounded-xl font-bold transition-colors ${confirmDialog.isDanger ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                  <button onClick={() => { confirmDialog.action(); setConfirmDialog({...confirmDialog, isOpen: false}); }} className={`flex-1 py-3 text-white rounded-xl font-bold transition-colors ${confirmDialog.isDanger ? 'bg-red-600 hover:bg-red-700' : 'bg-brand hover:bg-brand-hover'}`}>
                     Confirmar
                   </button>
                 </div>
@@ -372,39 +591,139 @@
             </div>
           )}
 
-          {/* Calculadora Flutuante Móvel */}
-          {isCalcOpen && (
-            <div 
-              style={{ left: calcPos.x, top: calcPos.y, position: 'fixed' }}
-              className="z-[90] bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-64 print:hidden"
-            >
-              <div 
-                className="flex justify-between items-center mb-3 cursor-move bg-gray-100 dark:bg-gray-900 -mx-4 -mt-4 p-3 rounded-t-2xl border-b dark:border-gray-700"
-                onMouseDown={(e) => {
-                  setIsDragging(true);
-                  dragRef.current = { x: e.clientX - calcPos.x, y: e.clientY - calcPos.y };
-                }}
-              >
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                  <GripHorizontal size={16}/>
-                  <span className="font-bold text-gray-700 dark:text-gray-200 text-sm select-none">Calculadora</span>
+          {/* --- MODAL PARA VER EVENTO ESPECÍFICO --- */}
+          {viewingEvent && (
+            <div className="absolute inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm print:hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col animate-in zoom-in-95">
+                <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-2xl">
+                  <div>
+                    <h3 className="font-bold text-xl text-gray-800 dark:text-gray-100">{viewingEvent.eventName}</h3>
+                    <p className="text-sm text-gray-500">{new Date(viewingEvent.date).toLocaleString('pt-BR')}</p>
+                  </div>
+                  <button onClick={() => setViewingEvent(null)} className="text-gray-500 hover:text-red-500 transition-colors"><X size={24}/></button>
                 </div>
-                <button onClick={() => setIsCalcOpen(false)} className="text-gray-500 hover:text-red-500"><X size={18}/></button>
-              </div>
-              
-              <div className="bg-gray-100 dark:bg-gray-900 p-3 rounded-xl text-right text-2xl font-mono mb-3 overflow-hidden border dark:border-gray-700 select-none">
-                {calcInput || '0'}
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {['7','8','9','÷','4','5','6','×','1','2','3','-','C','0',',','+'].map(btn => (
-                  <button key={btn} onClick={() => handleCalcBtn(btn)} className={`p-3 rounded-lg font-bold text-lg transition-colors ${btn === 'C' ? 'bg-red-500 text-white hover:bg-red-600' : ['÷','×','-','+'].includes(btn) ? 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600' : 'bg-gray-50 dark:bg-gray-800 border dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>{btn}</button>
-                ))}
-                <button onClick={() => handleCalcBtn('=')} className="col-span-4 p-3 rounded-lg font-bold text-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">=</button>
+                <div className="p-5 overflow-y-auto flex-1 space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-4 rounded-xl text-center">
+                      <p className="text-xs uppercase font-bold text-emerald-600 dark:text-emerald-400 mb-1">Total Arrecadado</p>
+                      <p className="font-black text-2xl text-emerald-700 dark:text-emerald-300">{formatCurrency(viewingEvent.totalSales)}</p>
+                    </div>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-xl text-center">
+                      <p className="text-xs uppercase font-bold text-blue-600 dark:text-blue-400 mb-1">Volume de Vendas</p>
+                      <p className="font-black text-2xl text-blue-700 dark:text-blue-300">{viewingEvent.salesCount}</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-bold text-lg border-b dark:border-gray-700 pb-2 mb-4 text-gray-700 dark:text-gray-300">Todas as Transações</h4>
+                    {viewingEvent.salesData && viewingEvent.salesData.length > 0 ? (
+                      <div className="space-y-3">
+                        {viewingEvent.salesData.map(sale => (
+                          <div key={sale.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                            <div>
+                              <div className="flex gap-2 items-center mb-1">
+                                <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${sale.paymentMethod === 'PIX' ? 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'}`}>
+                                  {sale.paymentMethod}
+                                </span>
+                                <span className="text-xs text-gray-500">{new Date(sale.timestamp).toLocaleTimeString('pt-BR')}</span>
+                              </div>
+                              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                {sale.items.map(i => `${i.quantity}x ${i.product.name}`).join(' • ')}
+                              </p>
+                            </div>
+                            <div className="font-black text-lg text-gray-900 dark:text-gray-100 text-right">
+                              {formatCurrency(sale.total)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm text-center py-4">Nenhuma venda registrada nos detalhes deste evento.</p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Modal PIX */}
+          {isCalcOpen && (
+            <div ref={calcRef} style={{ transform: `translate(${calcPos.current.x}px, ${calcPos.current.y}px)` }} className="fixed top-0 left-0 z-50 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-64 print:hidden animate-in fade-in overflow-hidden">
+              <div className="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-900 cursor-move border-b border-gray-200 dark:border-gray-700" onMouseDown={handleCalcDragStart} onTouchStart={handleCalcDragStart}>
+                <div className="flex items-center gap-2 text-gray-500">
+                  <GripHorizontal size={16}/>
+                  <span className="font-bold text-sm uppercase">Calculadora</span>
+                </div>
+                <button onClick={() => setIsCalcOpen(false)} className="text-gray-500 hover:text-red-500"><X size={18}/></button>
+              </div>
+              <div className="p-4">
+                <div className="bg-gray-100 dark:bg-gray-900 p-3 rounded-xl text-right text-2xl font-mono mb-3 overflow-hidden border dark:border-gray-700 h-14 flex items-center justify-end">
+                  {calcInput || '0'}
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {['7','8','9','÷','4','5','6','×','1','2','3','-','C','0',',','+'].map(btn => (
+                    <button key={btn} onClick={() => handleCalcBtn(btn)} className={`p-3 rounded-lg font-bold text-lg transition-colors ${btn === 'C' ? 'bg-red-500 text-white hover:bg-red-600' : ['÷','×','-','+'].includes(btn) ? 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600' : 'bg-gray-50 dark:bg-gray-800 border dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>{btn}</button>
+                  ))}
+                  <button onClick={() => handleCalcBtn('=')} className="col-span-4 p-3 bg-brand text-white rounded-lg font-bold text-lg hover:bg-brand-hover transition-colors">=</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* --- MODAL DE PAGAMENTO EM DINHEIRO (TROCO) --- */}
+          {isCashModalOpen && (
+            <div className="absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm print:hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95">
+                <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 bg-emerald-50 dark:bg-emerald-900/30">
+                  <h3 className="font-bold text-emerald-800 dark:text-emerald-400 flex items-center gap-2"><Banknote size={20} /> Receber Dinheiro</h3>
+                  <button onClick={() => setIsCashModalOpen(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400"><X size={20} /></button>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-gray-500 dark:text-gray-400 font-semibold">Total da Compra:</span>
+                    <span className="text-2xl font-black text-brand">{formatCurrency(cartTotal)}</span>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-1">Valor Recebido (R$)</label>
+                    <input 
+                      type="number" 
+                      min={cartTotal} 
+                      step="0.01"
+                      value={amountReceived} 
+                      onChange={e => setAmountReceived(e.target.value)} 
+                      placeholder="Ex: 50.00" onKeyDown={e => { if (e.key === 'Enter' && Number(amountReceived) >= cartTotal) processCheckout('DINHEIRO'); }} 
+                      className="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-600 rounded-xl outline-none text-xl font-bold" 
+                      autoFocus 
+                    />
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <button type="button" onClick={() => setAmountReceived(cartTotal.toFixed(2))} className="px-3 py-1.5 text-sm font-bold rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300">Valor exato</button>
+                    {[5, 10, 20, 50, 100].map(v => (
+                      <button key={v} type="button" onClick={() => setAmountReceived(String(v))} className="px-3 py-1.5 text-sm font-bold rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">R$ {v}</button>
+                    ))}
+                  </div>
+
+                  {Number(amountReceived) > 0 && (
+                    <div className={`p-4 rounded-xl flex justify-between items-center ${Number(amountReceived) >= cartTotal ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300' : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300'}`}>
+                      <span className="font-bold">Troco:</span>
+                      <span className="text-2xl font-black">
+                        {Number(amountReceived) >= cartTotal 
+                          ? formatCurrency(Number(amountReceived) - cartTotal) 
+                          : 'Valor Insuficiente'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 flex gap-3 bg-gray-50 dark:bg-gray-800/80">
+                  <button onClick={() => setIsCashModalOpen(false)} className="flex-1 py-3 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold hover:bg-gray-300">Cancelar</button>
+                  <button onClick={() => processCheckout('DINHEIRO')} disabled={Number(amountReceived) < cartTotal} className="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Confirmar Venda
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {isPixModalOpen && (
             <div className="absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm print:hidden">
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95">
@@ -436,11 +755,13 @@
 
           {/* ================= BARRA LATERAL ================= */}
           <aside className="w-20 md:w-64 border-r dark:border-gray-800 flex flex-col p-4 shadow-sm print:hidden transition-all duration-300 z-10 shrink-0 h-screen overflow-y-auto bg-white dark:bg-gray-900">
-            <div className="flex flex-col items-center md:items-start md:flex-row gap-3 px-2 mb-8 mt-2 text-blue-600 dark:text-blue-500">
-              <img src={settings.logoUrl} alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-current shrink-0" />
+            <div className="flex items-center gap-3 px-2 mb-8 mt-2 text-brand">
+              <img src={settings.logoUrl} alt="Logo" className="w-10 h-10 rounded-full object-cover border-2 border-current shrink-0 bg-white" />
               <div className="hidden md:block overflow-hidden">
-                <h1 className="text-sm font-black uppercase text-gray-500 dark:text-gray-400 tracking-wider truncate">{settings.gremioName}</h1>
-                <h2 className="text-lg font-bold tracking-tight truncate text-gray-800 dark:text-gray-100">{settings.eventName}</h2>
+                <h1 className="text-sm font-bold tracking-tight text-ellipsis whitespace-nowrap text-gray-800 dark:text-gray-200">
+                  {settings.gremioName}
+                </h1>
+                <p className={`text-xs truncate ${settings.eventOpen ? 'text-brand' : 'text-red-500 font-semibold'}`}>{settings.eventOpen ? settings.eventName : '● Caixa fechado'}</p>
               </div>
             </div>
 
@@ -448,8 +769,8 @@
               <NavItem id="pos" icon={ShoppingCart} label="Caixa (PDV)" />
               <NavItem id="products" icon={Tag} label="Cardápio" />
               <NavItem id="history" icon={History} label="Histórico Atual" />
-              <NavItem id="report" icon={LayoutDashboard} label="Relatório de Vendas" />
-              <NavItem id="closing" icon={Lock} label="Fechamento (Gaveta)" />
+              <NavItem id="report" icon={LayoutDashboard} label="Relatório" />
+              <NavItem id="closing" icon={Lock} label="Fechamento" />
             </nav>
 
             <div className="mt-auto space-y-2 pt-4 border-t border-gray-200 dark:border-gray-800">
@@ -469,31 +790,71 @@
             <div className="flex-1 overflow-y-auto p-4 md:p-6 print:p-0">
               
               {/* === CAIXA (PDV) === */}
-              {activeTab === 'pos' && (
+              {activeTab === 'pos' && !settings.eventOpen && (
+                <div className="h-full flex items-center justify-center print:hidden">
+                  <form onSubmit={(e) => { e.preventDefault(); openEvent(); }} className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl shadow-sm p-8 w-full max-w-md text-center space-y-4">
+                    <div className="mx-auto w-16 h-16 rounded-full bg-brand/10 text-brand flex items-center justify-center"><Lock size={32}/></div>
+                    <h2 className="text-2xl font-bold">Caixa fechado</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Nenhum evento em andamento. Dê um nome ao evento para abrir o caixa e começar a vender.</p>
+                    <input type="text" value={newEventName} onChange={e => setNewEventName(e.target.value)} placeholder="Nome do evento (ex: Festa Junina)" className="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-600 rounded-xl outline-none text-center" autoFocus />
+                    <button type="submit" className="w-full bg-brand hover:bg-brand-hover text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"><ShoppingCart size={20}/> Abrir Caixa</button>
+                    {products.length === 0 && <p className="text-xs text-amber-600 dark:text-amber-400">Dica: o cardápio está vazio. Cadastre os produtos na aba Cardápio.</p>}
+                    {eventLogs.length > 0 && <p className="text-xs text-gray-400">Último evento: {eventLogs[0].eventName} — {formatCurrency(eventLogs[0].totalSales)}</p>}
+                  </form>
+                </div>
+              )}
+
+              {activeTab === 'pos' && settings.eventOpen && (
                 <div className="flex flex-col lg:flex-row gap-6 h-full print:hidden">
                   <div className="flex-1 flex flex-col">
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-2xl font-bold">Frente de Caixa</h2>
-                      <span className="text-sm text-gray-500">{products.length} produtos</span>
+                      <div className="relative w-48 sm:w-64"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/><input type="search" value={posSearch} onChange={e => setPosSearch(e.target.value)} placeholder={`Buscar em ${products.length} produtos`} className="w-full pl-9 pr-3 py-2 text-sm bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl outline-none focus:border-brand"/></div>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pb-4 pr-2">
-                      {products.map(p => (
-                        <button key={p.id} onClick={() => addToCart(p)} className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:border-blue-400 transition-all active:scale-95 group">
-                          <span className="font-semibold mb-2 group-hover:text-blue-500">{p.name}</span>
-                          <span className="text-blue-700 dark:text-blue-300 font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-lg">{formatCurrency(p.price)}</span>
+                      {products.length === 0 && (
+                        <div className="col-span-full bg-white dark:bg-gray-800 border border-dashed dark:border-gray-600 rounded-2xl p-8 text-center">
+                          <Tag size={32} className="mx-auto mb-3 text-gray-400"/>
+                          <p className="font-semibold mb-1">Nenhum produto no cardápio</p>
+                          <p className="text-sm text-gray-500 mb-4">Cadastre os produtos para começar a vender.</p>
+                          <button onClick={() => setActiveTab('products')} className="bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl font-bold">Ir para o Cardápio</button>
+                        </div>
+                      )}
+                      {products.length > 0 && filteredProducts.length === 0 && <p className="col-span-full text-center text-gray-500 py-8">Nenhum produto encontrado para "{posSearch}".</p>}
+                      {filteredProducts.map(p => (
+                        <button key={p.id} disabled={p.stockType === 'finite' && p.stockQuantity <= 0} onClick={() => addToCart(p)} className={`bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:border-brand transition-all active:scale-95 group ${p.stockType === 'finite' && p.stockQuantity <= 0 ? 'opacity-50 cursor-not-allowed grayscale hover:border-gray-300 dark:hover:border-gray-700' : ''}`}>
+                          <span className="font-semibold mb-2 group-hover:text-brand">{p.name}</span>
+                          <span className="text-brand font-bold bg-brand/10 dark:bg-brand/20 px-3 py-1 rounded-lg mb-2">{formatCurrency(p.price)}</span>
+                          {p.stockType === 'finite' && (
+                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${p.stockQuantity > 0 ? (p.stockQuantity <= 5 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300') : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'}`}>
+                              {p.stockQuantity > 0 ? `${p.stockQuantity <= 5 ? '⚠ Restam ' : ''}${p.stockQuantity} un.${p.stockQuantity <= 5 ? '' : ' no estoque'}` : 'Esgotado'}
+                            </span>
+                          )}
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <div className="w-full lg:w-96 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl shadow-sm flex flex-col h-[600px] lg:h-full shrink-0">
-                    <div className="p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-t-2xl">
-                      <h3 className="text-lg font-bold flex justify-between items-center">
-                        Comanda Atual
-                        <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full">{cart.reduce((sum, i) => sum + i.quantity, 0)} itens</span>
+                    <div className="p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-t-2xl flex justify-between items-center">
+                      <h3 className="text-lg font-bold flex items-center gap-2">
+                        Comanda
+                        <span className="bg-brand/20 text-brand text-xs px-2 py-1 rounded-full">{cart.reduce((sum, i) => sum + i.quantity, 0)} itens</span>
                       </h3>
+                      {cart.length > 0 && (
+                        <button onClick={clearCart} className="text-sm text-red-500 hover:text-red-700 font-semibold flex items-center gap-1">
+                          <Trash2 size={14} /> Limpar
+                        </button>
+                      )}
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                      {cart.length === 0 && (
+                        <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 py-10">
+                          <ShoppingCart size={36} className="mb-2 opacity-60"/>
+                          <p className="font-semibold">Comanda vazia</p>
+                          <p className="text-xs">Toque em um produto para adicionar.</p>
+                        </div>
+                      )}
                       {cart.map(item => (
                         <div key={item.product.id} className="flex justify-between items-center bg-gray-50 dark:bg-gray-700/30 p-3 rounded-xl border dark:border-gray-700">
                           <div className="flex-1 pr-2">
@@ -504,7 +865,7 @@
                             <div className="flex items-center bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-600 shadow-sm">
                               <button onClick={() => removeFromCart(item.product.id)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30"><MinusCircle size={16}/></button>
                               <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
-                              <button onClick={() => addToCart(item.product)} className="p-1.5 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30"><PlusCircle size={16}/></button>
+                              <button onClick={() => addToCart(item.product)} className="p-1.5 text-brand hover:bg-brand/10 dark:hover:bg-brand/20"><PlusCircle size={16}/></button>
                             </div>
                             <div className="font-bold text-sm w-16 text-right">{formatCurrency(item.product.price * item.quantity)}</div>
                           </div>
@@ -514,18 +875,17 @@
                     <div className="p-4 bg-gray-50 dark:bg-gray-800/80 border-t dark:border-gray-700 rounded-b-2xl">
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-sm font-medium">Desconto (R$):</span>
-                        <input type="number" min="0" step="0.5" value={cartDiscount || ''} onChange={e => setCartDiscount(Number(e.target.value))} className="w-24 text-right p-1 border dark:border-gray-600 rounded bg-white dark:bg-gray-700 outline-none" placeholder="0.00" />
+                        <input type="number" min="0" step="0.5" value={cartDiscount || ''} onChange={e => setCartDiscount(Math.min(Math.max(0, Number(e.target.value)), cartSubtotal))} className="w-24 text-right p-1 border dark:border-gray-600 rounded bg-white dark:bg-gray-700 outline-none" placeholder="0.00" />
                       </div>
                       <div className="flex justify-between items-end mb-4">
                         <span className="font-medium">Total a Pagar:</span>
                         <div className="text-right">
                           {cartDiscount > 0 && <span className="text-sm text-gray-400 line-through block">{formatCurrency(cartSubtotal)}</span>}
-                          <span className="text-3xl font-black text-blue-600 dark:text-blue-400">{formatCurrency(cartTotal)}</span>
+                          <span className="text-3xl font-black text-brand">{formatCurrency(cartTotal)}</span>
                         </div>
                       </div>
-                      {checkoutMsg && <div className="mb-4 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 p-3 rounded-xl text-sm font-medium flex justify-center gap-2 animate-pulse"><CheckCircle size={18} /> {checkoutMsg}</div>}
                       <div className="grid grid-cols-2 gap-2">
-                        <button onClick={() => processCheckout('DINHEIRO')} disabled={cart.length===0} className="bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl font-bold flex flex-col items-center justify-center gap-1 active:scale-95 disabled:opacity-50"><Banknote size={20} /> <span className="text-xs">Dinheiro</span></button>
+                        <button onClick={handleCashClick} disabled={cart.length===0} className="bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl font-bold flex flex-col items-center justify-center gap-1 active:scale-95 disabled:opacity-50"><Banknote size={20} /> <span className="text-xs">Dinheiro</span></button>
                         <button onClick={handlePixClick} disabled={cart.length===0} className="bg-teal-500 hover:bg-teal-600 text-white py-3 rounded-xl font-bold flex flex-col items-center justify-center gap-1 active:scale-95 disabled:opacity-50"><CreditCard size={20} /> <span className="text-xs">PIX</span></button>
                       </div>
                     </div>
@@ -543,13 +903,26 @@
                         <label className="block text-sm font-semibold mb-1">Nome do Produto</label>
                         <input type="text" value={prodName} onChange={e => setProdName(e.target.value)} required className="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none" />
                       </div>
-                      <div className="w-full md:w-40">
+                      <div className="w-full md:w-32">
                         <label className="block text-sm font-semibold mb-1">Preço (R$)</label>
                         <input type="number" step="0.01" min="0" value={prodPrice} onChange={e => setProdPrice(e.target.value)} required className="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none" />
                       </div>
+                      <div className="w-full md:w-32">
+                        <label className="block text-sm font-semibold mb-1">Tipo de Estoque</label>
+                        <select value={prodStockType} onChange={e => setProdStockType(e.target.value)} className="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none">
+                          <option value="infinite">Infinito (∞)</option>
+                          <option value="finite">Finito</option>
+                        </select>
+                      </div>
+                      {prodStockType === 'finite' && (
+                        <div className="w-full md:w-24">
+                          <label className="block text-sm font-semibold mb-1">Quantidade</label>
+                          <input type="number" step="1" min="0" value={prodStockQty} onChange={e => setProdStockQty(e.target.value)} required className="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none" />
+                        </div>
+                      )}
                       <div className="flex gap-2">
-                        {editingProduct && <button type="button" onClick={() => {setEditingProduct(null); setProdName(''); setProdPrice('');}} className="p-3 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold">Cancelar</button>}
-                        <button type="submit" className="p-3 bg-blue-600 text-white rounded-xl font-bold flex items-center gap-2"><CheckCircle size={20} /> Salvar</button>
+                        {editingProduct && <button type="button" onClick={() => {setEditingProduct(null); setProdName(''); setProdPrice(''); setProdStockType('infinite'); setProdStockQty('');}} className="p-3 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold">Cancelar</button>}
+                        <button type="submit" className="p-3 bg-brand text-white rounded-xl font-bold flex items-center gap-2"><CheckCircle size={20} /> Salvar</button>
                       </div>
                     </form>
                   </div>
@@ -557,17 +930,21 @@
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-gray-50 dark:bg-gray-900/50 border-b dark:border-gray-700 text-sm text-gray-500">
-                          <th className="p-4">Produto</th><th className="p-4 w-32">Preço</th><th className="p-4 w-24 text-center">Ações</th>
+                          <th className="p-4">Produto</th><th className="p-4 w-32">Preço</th><th className="p-4 w-32 text-center">Estoque</th><th className="p-4 w-24 text-center">Ações</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y dark:divide-gray-700">
+                        {products.length === 0 && <tr><td colSpan="4" className="p-8 text-center text-gray-500">Nenhum produto cadastrado. Use o formulário acima para adicionar o primeiro.</td></tr>}
                         {products.map(p => (
                           <tr key={p.id}>
                             <td className="p-4 font-medium">{p.name}</td>
                             <td className="p-4 font-bold text-green-600 dark:text-green-400">{formatCurrency(p.price)}</td>
+                            <td className="p-4 text-center font-semibold text-gray-700 dark:text-gray-300">
+                              {p.stockType === 'finite' ? `${p.stockQuantity} un.` : '∞'}
+                            </td>
                             <td className="p-4 flex justify-center gap-2">
-                              <button onClick={() => {setEditingProduct(p); setProdName(p.name); setProdPrice(p.price);}} className="p-2 text-blue-500 bg-blue-50 dark:bg-blue-900/30 rounded-lg"><Edit2 size={18}/></button>
-                              <button onClick={() => setConfirmDialog({isOpen: true, title: 'Excluir Produto', text: 'Deseja excluir este produto definitivamente?', isDanger: true, action: () => { setProducts(products.filter(item => item.id !== p.id)); setCart(cart.filter(item => item.product.id !== p.id)); }})} className="p-2 text-red-500 bg-red-50 dark:bg-red-900/30 rounded-lg"><Trash2 size={18}/></button>
+                              <button onClick={() => {setEditingProduct(p); setProdName(p.name); setProdPrice(p.price); setProdStockType(p.stockType || 'infinite'); setProdStockQty(p.stockQuantity !== null ? p.stockQuantity : '');}} className="p-2 text-brand bg-brand/10 rounded-lg"><Edit2 size={18}/></button>
+                              <button onClick={() => deleteProduct(p.id)} className="p-2 text-red-500 bg-red-50 dark:bg-red-900/30 rounded-lg"><Trash2 size={18}/></button>
                             </td>
                           </tr>
                         ))}
@@ -580,95 +957,128 @@
               {/* === HISTÓRICO DE VENDAS === */}
               {activeTab === 'history' && (
                 <div className="max-w-4xl mx-auto print:hidden">
-                  <h2 className="text-2xl font-bold mb-6">Histórico Atual do Evento</h2>
-                  {sales.length === 0 ? (
-                     <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center text-gray-500 dark:text-gray-400 border dark:border-gray-700 shadow-sm">Nenhuma transação registrada neste evento ainda.</div>
-                  ) : (
-                    <div className="space-y-4">
-                      {sales.map(sale => (
-                        <div key={sale.id} className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center shadow-sm">
-                          <div>
-                            <div className="flex gap-3 mb-2">
-                              <span className={`px-2 py-1 rounded text-xs font-bold ${sale.paymentMethod === 'PIX' ? 'bg-teal-100 dark:bg-teal-900/50 text-teal-800 dark:text-teal-300' : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300'}`}>{sale.paymentMethod}</span>
-                              <span className="text-sm text-gray-500">{formatDate(sale.timestamp)}</span>
-                              {sale.studentInfo && <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">👤 {sale.studentInfo.name} ({sale.studentInfo.schoolClass})</span>}
-                            </div>
-                            <p className="text-sm">{sale.items.map(i => `${i.quantity}x ${i.product.name}`).join(' • ')}</p>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold">Histórico de Transações</h2>
+                    <button onClick={exportCSV} disabled={sales.length === 0} className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-colors">
+                      <FileSpreadsheet size={18} /> Excel (CSV)
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {sales.length === 0 && (
+                      <div className="bg-white dark:bg-gray-800 border border-dashed dark:border-gray-600 rounded-2xl p-10 text-center text-gray-500">
+                        <History size={32} className="mx-auto mb-3 text-gray-400"/>
+                        <p className="font-semibold">Nenhuma venda registrada neste evento ainda.</p>
+                      </div>
+                    )}
+                    {sales.map(sale => (
+                      <div key={sale.id} className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center shadow-sm">
+                        <div>
+                          <div className="flex gap-3 mb-2">
+                            <span className={`px-2 py-1 rounded text-xs font-bold ${sale.paymentMethod === 'PIX' ? 'bg-teal-100 dark:bg-teal-900/50 text-teal-800 dark:text-teal-300' : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300'}`}>{sale.paymentMethod}</span>
+                            <span className="text-sm text-gray-500">{formatDate(sale.timestamp)}</span>
+                            {sale.studentInfo && <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">👤 {sale.studentInfo.name} ({sale.studentInfo.schoolClass})</span>}
                           </div>
-                          <div className="flex items-center gap-4 mt-3 md:mt-0">
-                            <span className="text-xl font-black">{formatCurrency(sale.total)}</span>
-                            <button onClick={() => cancelSale(sale.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 p-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors"><RotateCcw size={16} /> Estornar</button>
-                          </div>
+                          <p className="text-sm">{sale.items.map(i => `${i.quantity}x ${i.product.name}`).join(' • ')}</p>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                        <div className="flex items-center gap-4 mt-3 md:mt-0">
+                          <span className="text-xl font-black">{formatCurrency(sale.total)}</span>
+                          <button onClick={() => cancelSale(sale.id)} className="text-red-500 hover:bg-red-50 dark:bg-red-900/30 p-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors"><RotateCcw size={16} /> Estornar</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* === ABA: RELATÓRIO DE VENDAS === */}
               {(activeTab === 'report') && (
                 <div className="max-w-4xl mx-auto">
-                  <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 print:hidden">
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 flex justify-between items-center print:hidden">
                     <div>
                       <h2 className="text-xl font-bold">Resumo de Vendas</h2>
-                      <p className="text-sm text-gray-500">Dados gerados pelo sistema em tempo real</p>
+                      <p className="text-sm text-gray-500">Dados gerados pelo sistema</p>
                     </div>
-                    <div className="flex gap-3 w-full md:w-auto">
-                      <button onClick={requestPrint} className="flex-1 md:flex-none justify-center bg-gray-800 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-colors">
+                    <div className="flex gap-3">
+                      <button onClick={requestPrint} className="bg-gray-800 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-colors">
                         <Printer size={18} /> Imprimir
                       </button>
-                      <button onClick={() => downloadPDF('report-pdf-content', 'Relatorio_Vendas')} className="flex-1 md:flex-none justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-colors">
+                      <button onClick={() => downloadPDF('report-pdf-content', 'Relatorio_Vendas')} className="bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-colors">
                         <Download size={18} /> Baixar PDF
                       </button>
                     </div>
                   </div>
 
-                  <div id="report-pdf-content" className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 print:border-none print:shadow-none space-y-8 print:bg-white print:text-black">
-                    <div className="flex items-center justify-between border-b-2 border-gray-200 dark:border-gray-700 print:border-black pb-6">
-                      <img src={settings.logoUrl} alt="Logo" className="w-20 h-20 rounded-full object-cover border" />
-                      <div className="text-right">
-                        <h1 className="text-2xl font-black uppercase text-gray-800 dark:text-gray-100 print:text-black">{settings.gremioName}</h1>
-                        <h2 className="text-lg text-gray-600 dark:text-gray-300 print:text-black">{settings.eventName}</h2>
-                        <p className="text-sm mt-1 text-gray-500 print:text-gray-600">Relatório Geral de Vendas</p>
-                        <p className="text-xs mt-1 text-gray-400 print:text-gray-500">Gerado em: {formatDate(new Date().toISOString())}</p>
-                      </div>
+                  <div id="report-pdf-content" className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 print:border-none print:shadow-none space-y-8 print:bg-white !text-black text-black">
+                    <div className="text-center border-b-2 border-gray-300 pb-4 flex flex-col items-center">
+                      <img src={settings.logoUrl} alt="Logo Grêmio" className="w-16 h-16 rounded-full object-cover border-2 border-gray-300 mb-3" />
+                      <h1 className="text-3xl font-black uppercase">{settings.gremioName}</h1>
+                      <h2 className="text-xl font-bold text-gray-700 mt-1">{settings.eventName}</h2>
+                      <p className="text-lg mt-1">Relatório Geral de Vendas</p>
+                      <p className="text-sm mt-2 text-gray-600">Gerado em: {formatDate(new Date().toISOString())}</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-gray-50 dark:bg-gray-900 print:bg-white p-5 rounded-xl border-l-4 border-l-blue-500 print:border-black">
-                        <p className="text-xs font-bold uppercase text-gray-500 mb-1">Faturamento Bruto</p>
-                        <p className="text-2xl font-black print:text-black">{formatCurrency(reportData.total)}</p>
+                      <div className="bg-gray-50 print:bg-gray-50 p-5 rounded-xl border-l-4 border-l-blue-500 border border-gray-200">
+                        <p className="text-xs font-bold uppercase text-gray-600 mb-1">Bruto Total</p>
+                        <p className="text-2xl font-black">{formatCurrency(reportData.total)}</p>
                       </div>
-                      <div className="bg-gray-50 dark:bg-gray-900 print:bg-white p-5 rounded-xl border-l-4 border-l-teal-500 print:border-black">
-                        <p className="text-xs font-bold uppercase text-gray-500 mb-1">Total via PIX</p>
-                        <p className="text-2xl font-black print:text-black">{formatCurrency(reportData.pix)}</p>
+                      <div className="bg-gray-50 print:bg-gray-50 p-5 rounded-xl border-l-4 border-l-teal-500 border border-gray-200">
+                        <p className="text-xs font-bold uppercase text-gray-600 mb-1">Total PIX</p>
+                        <p className="text-2xl font-black">{formatCurrency(reportData.pix)}</p>
                       </div>
-                      <div className="bg-gray-50 dark:bg-gray-900 print:bg-white p-5 rounded-xl border-l-4 border-l-emerald-500 print:border-black">
-                        <p className="text-xs font-bold uppercase text-gray-500 mb-1">Total Dinheiro Vivo</p>
-                        <p className="text-2xl font-black print:text-black">{formatCurrency(reportData.dinheiro)}</p>
+                      <div className="bg-gray-50 print:bg-gray-50 p-5 rounded-xl border-l-4 border-l-emerald-500 border border-gray-200">
+                        <p className="text-xs font-bold uppercase text-gray-600 mb-1">Total Dinheiro</p>
+                        <p className="text-2xl font-black">{formatCurrency(reportData.dinheiro)}</p>
+                      </div>
+                      <div className="bg-gray-50 print:bg-gray-50 p-5 rounded-xl border-l-4 border-l-violet-500 border border-gray-200">
+                        <p className="text-xs font-bold uppercase text-gray-600 mb-1">Nº de Vendas</p>
+                        <p className="text-2xl font-black">{sales.length}</p>
+                      </div>
+                      <div className="bg-gray-50 print:bg-gray-50 p-5 rounded-xl border-l-4 border-l-amber-500 border border-gray-200">
+                        <p className="text-xs font-bold uppercase text-gray-600 mb-1">Ticket Médio</p>
+                        <p className="text-2xl font-black">{formatCurrency(sales.length ? reportData.total / sales.length : 0)}</p>
+                      </div>
+                      <div className="bg-gray-50 print:bg-gray-50 p-5 rounded-xl border-l-4 border-l-rose-500 border border-gray-200">
+                        <p className="text-xs font-bold uppercase text-gray-600 mb-1">Descontos Concedidos</p>
+                        <p className="text-2xl font-black">{formatCurrency(reportData.discounts)}</p>
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-bold border-b border-gray-200 dark:border-gray-700 pb-2 mb-4 print:text-black print:border-black">Detalhamento de Produtos</h3>
+                      <h3 className="text-lg font-bold border-b border-gray-300 pb-2 mb-4">Produtos Vendidos</h3>
                       <table className="w-full text-left">
-                        <thead className="text-xs uppercase text-gray-500 border-b print:border-black">
-                          <tr><th className="py-2">Produto</th><th className="py-2 text-center">Qtd Vendida</th><th className="py-2 text-right">Receita Total</th></tr>
+                        <thead className="text-xs uppercase text-gray-600 border-b border-gray-300">
+                          <tr><th className="py-2">Produto</th><th className="py-2 text-center">Qtd</th><th className="py-2 text-right">Receita</th></tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700 print:text-black print:divide-gray-300">
+                        <tbody className="divide-y divide-gray-200">
+                          {sales.length === 0 && <tr><td colSpan="3" className="py-6 text-center text-gray-500">Nenhuma venda registrada ainda.</td></tr>}
                           {Object.values(reportData.items).map((item, idx) => (
                             <tr key={idx}>
                               <td className="py-2 font-medium">{item.name}</td>
-                              <td className="py-2 text-center font-bold text-blue-600 print:text-black">{item.quantity}</td>
-                              <td className="py-2 text-right font-medium">{formatCurrency(item.total)}</td>
+                              <td className="py-2 text-center font-bold text-blue-700">{item.quantity}</td>
+                              <td className="py-2 text-right">{formatCurrency(item.total)}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
 
-                    <SignaturesSection />
+                    {/* ÁREA DE ASSINATURAS */}
+                    <div className="mt-20 pt-16 flex flex-col md:flex-row justify-around text-center text-sm font-semibold text-black gap-8">
+                      <div>
+                        <p>_____________________________________</p>
+                        <p className="mt-2">Coordenador Geral</p>
+                      </div>
+                      <div>
+                        <p>_____________________________________</p>
+                        <p className="mt-2">Coordenador Financeiro</p>
+                      </div>
+                      <div>
+                        <p>_____________________________________</p>
+                        <p className="mt-2">Operador de Caixa</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -676,184 +1086,239 @@
               {/* === ABA: FECHAMENTO DE GAVETA === */}
               {(activeTab === 'closing') && (
                 <div className="max-w-4xl mx-auto">
-                  <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 print:hidden">
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 flex justify-between items-center print:hidden">
                     <div>
-                      <h2 className="text-xl font-bold">Fechamento Físico de Caixa</h2>
-                      <p className="text-sm text-gray-500">Conferência de cédulas e moedas</p>
+                      <h2 className="text-xl font-bold">Fechamento Físico</h2>
+                      <p className="text-sm text-gray-500">Conferência da gaveta de dinheiro</p>
                     </div>
-                    <div className="flex gap-3 w-full md:w-auto">
-                      <button onClick={requestPrint} className="flex-1 md:flex-none justify-center bg-gray-800 hover:bg-gray-700 dark:bg-gray-600 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2">
+                    <div className="flex gap-3">
+                      <button onClick={requestPrint} className="bg-gray-800 hover:bg-gray-700 dark:bg-gray-600 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2">
                         <Printer size={18} /> Imprimir
                       </button>
-                      <button onClick={() => downloadPDF('closing-pdf-content', 'Fechamento_Gaveta')} className="flex-1 md:flex-none justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2">
+                      <button onClick={() => downloadPDF('closing-pdf-content', 'Fechamento_Gaveta')} className="bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2">
                         <Download size={18} /> Baixar PDF
                       </button>
                     </div>
                   </div>
 
-                  <div id="closing-pdf-content" className="bg-emerald-50 dark:bg-gray-800 p-6 md:p-8 rounded-2xl shadow-sm border border-emerald-200 dark:border-gray-700 print:border-none print:shadow-none space-y-8 print:bg-white print:text-black">
-                    <div className="flex items-center justify-between border-b-2 border-emerald-200 dark:border-gray-700 print:border-black pb-6">
-                      <img src={settings.logoUrl} alt="Logo" className="w-20 h-20 rounded-full object-cover border border-emerald-200" />
-                      <div className="text-right">
-                        <h1 className="text-2xl font-black uppercase text-emerald-900 dark:text-emerald-100 print:text-black">{settings.gremioName}</h1>
-                        <h2 className="text-lg text-emerald-800 dark:text-emerald-300 print:text-black">{settings.eventName}</h2>
-                        <p className="text-sm mt-1 text-emerald-700 dark:text-emerald-400 print:text-gray-600">Relatório de Fechamento de Gaveta</p>
-                        <p className="text-xs mt-1 text-emerald-600 dark:text-emerald-500 print:text-gray-500">Gerado em: {formatDate(new Date().toISOString())}</p>
-                      </div>
+                  <div id="closing-pdf-content" className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 print:border-none print:shadow-none space-y-8 print:bg-white !text-black text-black">
+                    <div className="text-center border-b-2 border-gray-300 pb-4 flex flex-col items-center">
+                      <img src={settings.logoUrl} alt="Logo Grêmio" className="w-16 h-16 rounded-full object-cover border-2 border-gray-300 mb-3" />
+                      <h1 className="text-3xl font-black uppercase">{settings.gremioName}</h1>
+                      <h2 className="text-xl font-bold text-gray-700 mt-1">{settings.eventName}</h2>
+                      <p className="text-lg mt-1">Fechamento de Caixa (Gaveta)</p>
+                      <p className="text-sm mt-2 text-gray-600">Gerado em: {formatDate(new Date().toISOString())}</p>
                     </div>
                     
                     <div className="print:hidden">
-                      <div className="bg-white dark:bg-gray-900 p-5 rounded-xl border border-emerald-200 dark:border-gray-700 shadow-sm mb-6">
-                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-                          <Banknote size={18} className="text-emerald-600"/> Preencha a quantidade exata de cada nota/moeda física existente na gaveta:
-                        </p>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                          {Object.keys(cashDrawer).sort((a,b)=>b-a).map(val => (
-                            <div key={val} className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-2 rounded-lg">
-                              <span className="text-xs font-bold text-gray-600 dark:text-gray-300">R$ {Number(val).toFixed(2)}</span>
-                              <input 
-                                type="number" min="0" step="1" 
-                                value={cashDrawer[val] || ''} 
-                                onChange={(e) => setCashDrawer({...cashDrawer, [val]: Number(e.target.value)})}
-                                className="w-16 p-1 text-center bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded outline-none font-mono font-bold"
-                                placeholder="0"
-                              />
-                            </div>
-                          ))}
-                        </div>
+                      <p className="text-sm text-gray-600 mb-4">Preencha as quantidades de cada nota/moeda física que está no caixa agora.</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {Object.keys(cashDrawer).sort((a,b)=>b-a).map(val => (
+                          <div key={val} className="flex items-center justify-between bg-gray-50 border border-gray-300 p-2 rounded-lg shadow-sm">
+                            <span className="text-xs font-bold text-gray-700">R$ {Number(val).toFixed(2)}</span>
+                            <input 
+                              type="number" min="0" step="1" 
+                              value={cashDrawer[val] || ''} 
+                              onChange={(e) => {
+                                setCashDrawer({...cashDrawer, [val]: Number(e.target.value)});
+                              }}
+                              className="w-16 p-1 text-center bg-white border border-gray-300 rounded outline-none font-mono font-bold"
+                              placeholder="0"
+                            />
+                          </div>
+                        ))}
                       </div>
                     </div>
 
-                    <div className="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-gray-900 print:bg-gray-100 p-6 rounded-xl shadow-sm border border-emerald-200 dark:border-gray-700 print:border-black">
+                    <div className="flex flex-col md:flex-row justify-between items-center bg-gray-50 print:bg-gray-50 p-6 rounded-xl shadow-sm border border-gray-300">
                       <div className="text-center md:text-left mb-4 md:mb-0">
-                        <p className="text-xs uppercase font-bold text-gray-500">Valor Físico Contado</p>
-                        <p className="text-3xl font-black text-emerald-600 print:text-black">{formatCurrency(drawerTotal)}</p>
+                        <p className="text-xs uppercase font-bold text-gray-600">Valor Físico Contado</p>
+                        <p className="text-3xl font-black text-emerald-700">{formatCurrency(drawerTotal)}</p>
                       </div>
                       
                       <div className="text-center">
-                        <p className="text-xs uppercase font-bold text-gray-500">Registrado no Sistema</p>
-                        <p className="text-xl font-bold text-gray-700 dark:text-gray-300 print:text-black">{formatCurrency(reportData.dinheiro)}</p>
+                        <p className="text-xs uppercase font-bold text-gray-600">Registrado no Sistema</p>
+                        <p className="text-xl font-bold text-gray-800">{formatCurrency(reportData.dinheiro)}</p>
                       </div>
 
                       <div className="text-center md:text-right mt-4 md:mt-0">
-                        <p className="text-xs uppercase font-bold text-gray-500">Diferença de Caixa</p>
+                        <p className="text-xs uppercase font-bold text-gray-600">Diferença de Caixa</p>
                         {drawerDiff === 0 ? (
-                          <p className="text-2xl font-bold text-green-600 print:text-black">Bateu Perfeito (+R$ 0,00)</p>
+                          <p className="text-2xl font-bold text-green-700">Bateu Perfeito (+R$ 0,00)</p>
                         ) : drawerDiff > 0 ? (
-                          <p className="text-2xl font-bold text-blue-600 print:text-black">Sobra: {formatCurrency(drawerDiff)}</p>
+                          <p className="text-2xl font-bold text-blue-700">Sobra: {formatCurrency(drawerDiff)}</p>
                         ) : (
-                          <p className="text-2xl font-bold text-red-600 print:text-black">Falta (Quebra): {formatCurrency(Math.abs(drawerDiff))}</p>
+                          <p className="text-2xl font-bold text-red-700">Falta (Quebra): {formatCurrency(Math.abs(drawerDiff))}</p>
                         )}
                       </div>
                     </div>
-
-                    <SignaturesSection />
                   </div>
                 </div>
               )}
 
-              {/* === ABA: CONFIGURAÇÕES E LOGS === */}
+              {/* === CONFIGURAÇÕES === */}
               {activeTab === 'settings' && (
-                <div className="max-w-4xl mx-auto print:hidden space-y-8">
-                  <h2 className="text-2xl font-bold mb-2">Configurações e Logs</h2>
+                <div className="max-w-3xl mx-auto print:hidden space-y-6 pb-20">
+                  <h2 className="text-2xl font-bold mb-6">Configurações do Sistema</h2>
                   
-                  {/* Seção 1: Identidade Visual */}
-                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 overflow-hidden">
-                    <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-700 font-bold flex items-center gap-2">
-                      <Settings size={20}/> Identidade e Personalização
-                    </div>
-                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-semibold mb-2 flex items-center gap-2"><Flag size={16}/> Nome da Instituição / Grêmio</label>
-                        <input type="text" value={settings.gremioName} onChange={e => setSettings({...settings, gremioName: e.target.value})} className="w-full p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-600 rounded-xl outline-none focus:border-blue-500 transition-colors" placeholder="Ex: Grêmio Estudantil Castro Alves" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold mb-2 flex items-center gap-2"><Image size={16}/> URL da Logo Customizada</label>
-                        <input type="text" value={settings.logoUrl} onChange={e => setSettings({...settings, logoUrl: e.target.value})} className="w-full p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-600 rounded-xl outline-none focus:border-blue-500 transition-colors" placeholder="Link da imagem HTTP/HTTPS..." />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-semibold mb-2">Nome do Evento Atual (Aparece nos relatórios)</label>
-                        <input type="text" value={settings.eventName} onChange={e => setSettings({...settings, eventName: e.target.value})} className="w-full p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-600 rounded-xl outline-none focus:border-blue-500 transition-colors" placeholder="Ex: Festa Junina 2024" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Seção 2: Encerramento de Evento */}
-                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 overflow-hidden">
-                    <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-700 font-bold flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                      <FileArchive size={20}/> Encerrar Evento Atual
-                    </div>
-                    <div className="p-6 flex flex-col md:flex-row gap-6 items-center justify-between">
-                      <div className="text-gray-600 dark:text-gray-300 text-sm">
-                        <p className="mb-2">Ao clicar em <strong>Encerrar Evento</strong>, o sistema fará o seguinte:</p>
-                        <ul className="list-disc ml-5 space-y-1">
-                          <li>Salvará os totais financeiros (Pix, Dinheiro, Quebra de Caixa) na aba de Logs Históricos.</li>
-                          <li>Zera a comanda, o histórico atual de vendas e a gaveta.</li>
-                          <li>Prepara o sistema de forma limpa para um novo dia ou evento.</li>
-                        </ul>
-                      </div>
-                      <button onClick={finishEvent} className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-colors">
-                        <CheckCircle size={20}/> Encerrar e Salvar
+                  {/* Backup / Exportação */}
+                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 p-6">
+                    <h3 className="font-bold text-lg border-b dark:border-gray-700 pb-2 mb-4 flex items-center gap-2"><Save size={20}/> Backup Local (Segurança)</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Como o sistema funciona sem internet, faça um backup regularmente para não perder seus dados se o navegador for limpo.</p>
+                    
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <button onClick={handleExportBackup} className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2">
+                        <Download size={20}/> Baixar Backup (.json)
                       </button>
+                      
+                      <div className="flex-1 relative">
+                        <input type="file" accept=".json" onChange={handleImportBackup} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                        <button className="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2">
+                          <Upload size={20}/> Restaurar Backup
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Seção 3: Logs Históricos */}
-                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 overflow-hidden">
-                    <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-700 font-bold flex justify-between items-center">
-                      <div className="flex items-center gap-2"><History size={20}/> Logs de Eventos Anteriores</div>
-                      {eventLogs.length > 0 && <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{eventLogs.length} eventos salvos</span>}
+                  {/* Identidade Visual e Upload de Logo */}
+                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 p-6 space-y-4">
+                    <h3 className="font-bold text-lg border-b dark:border-gray-700 pb-2 flex items-center gap-2"><Palette size={20}/> Identidade Visual</h3>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold mb-2">Cor do Tema</label>
+                      <div className="flex flex-wrap gap-3">
+                        {Object.keys(themeColors).map(color => (
+                          <button key={color} onClick={() => {
+                              setSettings({...settings, accentColor: color});
+                              showToast('Cor do tema atualizada!');
+                            }} 
+                            className={`w-10 h-10 rounded-full border-4 ${settings.accentColor === color ? 'border-gray-800 dark:border-gray-200' : 'border-transparent'} ${themeColors[color]}`}>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="p-6">
-                      {eventLogs.length === 0 ? (
-                        <p className="text-gray-500 text-center py-4">Nenhum evento encerrado ainda.</p>
-                      ) : (
-                        <div className="space-y-4">
-                          {eventLogs.map(log => (
-                            <div key={log.id} className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex flex-col lg:flex-row justify-between gap-4">
-                              <div>
-                                <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">{log.eventName}</h3>
-                                <p className="text-sm text-gray-500">{formatDate(log.date)}</p>
-                              </div>
-                              <div className="flex flex-wrap gap-4 text-sm">
-                                <div className="bg-white dark:bg-gray-800 p-2 rounded-lg border dark:border-gray-700">
-                                  <span className="block text-xs text-gray-500">Total Bruto</span>
-                                  <strong className="text-gray-800 dark:text-gray-200">{formatCurrency(log.totalGross)}</strong>
-                                </div>
-                                <div className="bg-white dark:bg-gray-800 p-2 rounded-lg border dark:border-gray-700">
-                                  <span className="block text-xs text-gray-500">PIX / Dinheiro Físico</span>
-                                  <strong className="text-gray-800 dark:text-gray-200">{formatCurrency(log.totalPix)} / {formatCurrency(log.drawerPhysical)}</strong>
-                                </div>
-                                <div className={`bg-white dark:bg-gray-800 p-2 rounded-lg border dark:border-gray-700 ${log.difference < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                  <span className="block text-xs text-gray-500">Diferença de Caixa</span>
-                                  <strong>{log.difference === 0 ? 'Perfeito' : formatCurrency(log.difference)}</strong>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
 
-                  {/* Zona de Perigo Real */}
-                  <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-200 dark:border-red-800/50 p-6 flex items-center justify-between gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Nome da Organização</label>
+                        <input type="text" value={settings.gremioName} onBlur={() => showToast('Nome salvo!')} onChange={e => setSettings({...settings, gremioName: e.target.value})} className="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-600 rounded-xl outline-none" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Nome do Evento Atual</label>
+                        <input type="text" value={settings.eventName} onBlur={() => showToast('Evento salvo!')} onChange={e => setSettings({...settings, eventName: e.target.value})} className="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-600 rounded-xl outline-none" />
+                      </div>
+                    </div>
+
+                    {/* Novo sistema de Upload de Logo estilo backup json */}
                     <div>
-                      <h3 className="font-bold text-red-800 dark:text-red-400 mb-1 flex items-center gap-2"><AlertTriangle size={18}/> Exclusão Completa (Reset de Fábrica)</h3>
-                      <p className="text-sm text-red-600 dark:text-red-300">Isto apagará tudo: Vendas atuais, Cardápio e Histórico de Logs.</p>
+                      <label className="block text-sm font-semibold mb-2">Logo (Enviar Imagem)</label>
+                      <div className="flex flex-col sm:flex-row relative items-center gap-4">
+                        <div className="w-16 h-16 shrink-0 rounded-xl border-2 border-dashed border-gray-400 dark:border-gray-600 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-900">
+                           {settings.logoUrl ? <img src={settings.logoUrl} alt="Preview Logo" className="w-full h-full object-cover" /> : <ImageIcon size={24} className="text-gray-400" />}
+                        </div>
+                        <div className="flex-1 relative w-full">
+                           <input 
+                             type="file" 
+                             accept="image/*" 
+                             onChange={(e) => {
+                               const file = e.target.files[0];
+                               if (file) {
+                                 const reader = new FileReader();
+                                 reader.onload = (event) => {
+                                   setSettings({...settings, logoUrl: event.target.result});
+                                   showToast('Logo atualizada com sucesso!');
+                                 };
+                                 reader.readAsDataURL(file);
+                               }
+                             }} 
+                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                           />
+                           <button type="button" className="w-full p-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                             <Upload size={20}/> Escolher Arquivo .PNG ou .JPG
+                           </button>
+                        </div>
+                      </div>
                     </div>
-                    <button onClick={() => {
+                  </div>
+
+                  {/* Gerenciamento de Eventos (Logs) */}
+                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 p-6">
+                     <h3 className="font-bold text-lg border-b dark:border-gray-700 pb-2 mb-4 flex items-center gap-2"><Archive size={20}/> Gerenciamento de Eventos</h3>
+                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                       {settings.eventOpen ? 'Finalizou o evento de hoje? Arquive as vendas para limpar o caixa e guardar os registros no histórico.' : 'Nenhum evento aberto no momento. Para vender, abra o caixa na tela Caixa (PDV).'}
+                     </p>
+                     <button onClick={() => {
+                        if (!settings.eventOpen) return setAlertDialog({isOpen: true, title: 'Aviso', text: 'Não há nenhum evento aberto.'});
+                        if (cart.length > 0) return setAlertDialog({isOpen: true, title: 'Comanda em aberto', text: 'Finalize ou limpe a comanda no Caixa antes de encerrar o evento.'});
+                        if (sales.length === 0) return setConfirmDialog({
+                          isOpen: true, title: 'Fechar caixa sem vendas', text: `O evento "${settings.eventName}" não tem vendas. Deseja apenas fechar o caixa? Nada será arquivado.`, isDanger: false,
+                          action: () => { setSettings({...settings, eventOpen: false, eventName: 'Novo Evento'}); setCashDrawer(defaultDrawer); showToast('Caixa fechado.', 'info'); }
+                        });
                         setConfirmDialog({
-                          isOpen: true, title: 'Resetar Tudo', text: 'Você tem certeza absoluta? Essa ação é irreversível.', isDanger: true,
+                          isOpen: true, title: 'Arquivar Evento', text: `Deseja encerrar o evento "${settings.eventName}" e salvar os logs? O caixa será zerado.`, isDanger: false,
                           action: () => {
-                            setSales([]); setEventLogs([]); setProducts([]);
-                            setCashDrawer({200:0,100:0,50:0,20:0,10:0,5:0,2:0,1:0,0.5:0,0.25:0,0.1:0,0.05:0}); 
-                            setSettings(defaultSettings);
-                            setActiveTab('pos');
+                            const newLog = {
+                              id: Date.now().toString(), eventName: settings.eventName, date: new Date().toISOString(),
+                              totalSales: getReport(sales).total, salesCount: sales.length, salesData: [...sales]
+                            };
+                            setEventLogs([newLog, ...eventLogs]); setSales([]); setCashDrawer(defaultDrawer);
+                            setSettings({...settings, eventName: 'Novo Evento', eventOpen: false});
+                            showToast('Evento encerrado e arquivado com sucesso!');
                           }
                         });
-                    }} className="shrink-0 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl transition-colors">
-                      Zerar o Sistema
+                     }} disabled={!settings.eventOpen} className="bg-brand hover:bg-brand-hover text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                       <Archive size={20}/> Encerrar Evento e Fechar Caixa
+                     </button>
+
+                     {eventLogs.length > 0 && (
+                       <div className="mt-8">
+                         <h4 className="font-bold mb-3">Histórico de Eventos Anteriores</h4>
+                         <div className="overflow-x-auto">
+                           <table className="w-full text-left text-sm border dark:border-gray-700 rounded-lg overflow-hidden">
+                             <thead className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400">
+                               <tr>
+                                 <th className="p-3">Data</th>
+                                 <th className="p-3">Evento</th>
+                                 <th className="p-3">Qtd. Vendas</th>
+                                 <th className="p-3 text-right">Faturamento</th>
+                                 <th className="p-3 text-right">Ações</th>
+                               </tr>
+                             </thead>
+                             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                               {eventLogs.map(log => (
+                                 <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                   <td className="p-3">{new Date(log.date).toLocaleDateString('pt-BR')}</td>
+                                   <td className="p-3 font-medium">{log.eventName}</td>
+                                   <td className="p-3">{log.salesCount}</td>
+                                   <td className="p-3 text-right font-bold text-green-600 dark:text-green-400">{formatCurrency(log.totalSales)}</td>
+                                   <td className="p-3 text-right">
+                                     <button onClick={() => setViewingEvent(log)} className="text-brand hover:text-brand-hover font-semibold flex items-center justify-end gap-1 ml-auto transition-colors">
+                                       <Eye size={16}/> Ver
+                                     </button>
+                                   </td>
+                                 </tr>
+                               ))}
+                             </tbody>
+                           </table>
+                         </div>
+                       </div>
+                     )}
+                  </div>
+
+                  {/* Zona de Perigo */}
+                  <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-200 dark:border-red-800/50 p-6">
+                    <h3 className="font-bold text-red-800 dark:text-red-400 mb-2 flex items-center gap-2"><AlertTriangle/> Zona de Perigo (Hard Reset)</h3>
+                    <p className="text-sm text-red-600 dark:text-red-300 mb-4">Isto apagará todas as vendas, histórico de logs e resetará a gaveta de dinheiro.</p>
+                    <button onClick={() => {
+                        setConfirmDialog({
+                          isOpen: true, title: 'Zerar Todo o Sistema', text: 'Você tem certeza absoluta? Todo o histórico atual e dados da gaveta serão perdidos permanentemente.', isDanger: true,
+                          action: () => {
+                            setSales([]); setEventLogs([]); setCart([]); setCashDrawer(defaultDrawer); setSettings({...settings, eventOpen: false}); setActiveTab('pos');
+                            showToast('Sistema resetado!', 'error');
+                          }
+                        });
+                    }} className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl">
+                      Excluir Todos os Dados e Resetar
                     </button>
                   </div>
                 </div>
